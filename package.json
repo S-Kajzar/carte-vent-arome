@@ -1,0 +1,16 @@
+{
+  "name": "carte-vent-arome",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@openmeteo/file-reader": "^0.0.21",
+    "maplibre-gl": "^5.6.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

@@ -1,0 +1,18 @@
+# Dépendances et build (le build est refait par GitHub Actions)
+node_modules/
+dist/
+
+# Environnement / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Journaux et fichiers système
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>Carte des prévisions de vent</title>
+    <meta name="description" content="Carte des prévisions de vent des modèles météo, dont AROME 1.3 km" />
+    <meta name="theme-color" content="#333333" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%23555'/%3E%3Cpath d='M3.2 9.3c1.8-2.8 6.7-3.6 9.6-1.4' fill='none' stroke='%23fff' stroke-width='1.3'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header id="header">
+      <nav id="nav">
+        <a class="logo" href="./" aria-label="Accueil"></a>
+        <div id="search">
+          <input id="search-input" type="search" autocomplete="off" placeholder="recherchez un spot..." aria-label="Rechercher un lieu" />
+          <ul id="search-results" class="dropdown" hidden></ul>
+        </div>
+        <ul class="menu" id="menu-left">
+          <li class="m-home"><a class="mainmenu" data-act="home" title="Home"></a></li>
+          <li class="m-maps has-sub">
+            <a class="mainmenu" aria-haspopup="true" aria-expanded="false" data-icon="map" data-text="Cartes"></a>
+            <ul class="dropdown" data-items="maps"></ul>
+          </li>
+          <li class="m-tides"><a class="mainmenu" data-icon="tide" data-text="Marées"></a></li>
+          <li class="m-more has-sub">
+            <a class="mainmenu" aria-haspopup="true" aria-expanded="false" data-icon="menu" data-text="Plus..."></a>
+            <ul class="dropdown" data-items="more"></ul>
+          </li>
+          <li class="m-help has-sub">
+            <a class="mainmenu" aria-haspopup="true" aria-expanded="false" data-icon="help" data-text="Aide"></a>
+            <ul class="dropdown" data-items="help"></ul>
+          </li>
+        </ul>
+        <ul class="menu" id="menu-right">
+          <li class="m-news"><a class="mainmenu" data-icon="news" data-text="News"></a></li>
+          <li class="m-options"><a class="mainmenu" data-act="options" data-icon="gear" data-text="Options"></a></li>
+          <li class="m-login"><a class="mainmenu" data-icon="user" data-text="Se connecter"></a></li>
+          <li class="m-lang has-sub">
+            <a class="mainmenu" aria-haspopup="true" aria-expanded="false" data-icon="globe" data-text="fr"></a>
+            <ul class="dropdown dropdown-right" data-items="lang"></ul>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="wgmap-page">
+      <div id="map"></div>
+      <canvas id="particles"></canvas>
+
+      <div id="time-menu">
+        <a id="map-time" aria-haspopup="true" aria-expanded="false"></a>
+        <ul class="dropdown" id="tz-menu">
+          <li><a data-tz="now"><span class="ico" data-icon="clock"></span> Current time</a></li>
+          <li><a data-tz="UTC"><span class="ico" data-icon="clock"></span> UTC</a></li>
+          <li><a data-tz="pick"><span class="ico" data-icon="clock"></span> Choisissez le fuseau horaire sur la carte</a></li>
+        </ul>
+      </div>
+
+      <a class="side-step prev" data-step="-1" aria-label="Heure précédente"></a>
+      <a class="side-step next" data-step="1" aria-label="Heure suivante"></a>
+
+      <div id="map-controls">
+        <a class="mctrl" id="ctrl-param"><span class="ico" data-icon="wind"></span> <span class="t">Vent</span></a>
+        <a class="mctrl" id="ctrl-model"><span class="ico ico-model" data-icon="model"></span> <span class="t"></span></a>
+        <a class="mctrl" id="ctrl-compare"><span class="ico" data-icon="compare"></span> <span class="t">Compare</span></a>
+        <a class="mctrl" id="ctrl-options"><span class="ico" data-icon="gear"></span> <span class="t">Options</span></a>
+        <a class="mctrl" id="ctrl-help" aria-label="Aide"><span class="ico" data-icon="help"></span></a>
+      </div>
+
+      <section class="panel" id="panel-model" hidden>
+        <header>Select model <a class="close" aria-label="Fermer"></a></header>
+        <ul class="list"></ul>
+      </section>
+      <section class="panel" id="panel-param" hidden>
+        <header>Paramètre <a class="close" aria-label="Fermer"></a></header>
+        <ul class="list"></ul>
+      </section>
+      <section class="panel" id="panel-options" hidden>
+        <header>Options <a class="close" aria-label="Fermer"></a></header>
+        <div class="body">
+          <label class="row"><input type="checkbox" id="opt-particles" checked /> Animation du vent</label>
+          <div class="row"><span>Unités du vent</span>
+            <select id="opt-units">
+              <option value="kn">nœuds</option>
+              <option value="ms">m/s</option>
+              <option value="kmh">km/h</option>
+              <option value="bft">Beaufort</option>
+            </select>
+          </div>
+          <div class="row"><span>Opacité des couleurs</span><input type="range" id="opt-opacity" min="20" max="100" value="100" /></div>
+        </div>
+      </section>
+      <section class="panel" id="panel-help" hidden>
+        <header>Légende <a class="close" aria-label="Fermer"></a></header>
+        <div class="body">
+          <div id="legend"></div>
+          <p class="note">Passez la souris sur la carte (ou touchez-la) pour lire le vent moyen et les rafales prévus à cet endroit. Faites glisser la frise en bas pour changer l'heure. Flèches ← → du clavier : heure précédente / suivante.</p>
+          <p class="note">Prévisions : Open-Meteo (Météo-France, DWD, NOAA, ECMWF…). Le modèle AROME-FR 1.3 km couvre la France et ses alentours sur environ 2 jours.</p>
+        </div>
+      </section>
+      <section class="panel" id="panel-compare" hidden>
+        <header>Compare <a class="close" aria-label="Fermer"></a></header>
+        <div class="body"><p class="note">Cliquez sur la carte : le vent prévu par chaque modèle à cet endroit et à cette heure s'affiche ici.</p><div id="compare-out"></div></div>
+      </section>
+
+      <div id="status" hidden></div>
+
+      <div id="timebar">
+        <a class="tb-btn tb-prev" data-step="-1" aria-label="Heure précédente"></a>
+        <a class="tb-btn tb-next" data-step="1" aria-label="Heure suivante"></a>
+        <a class="tb-btn tb-play" aria-label="Lecture"></a>
+        <a class="tb-btn tb-now" title="Current time" aria-label="Heure actuelle"></a>
+        <div id="timescroll"></div>
+      </div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
